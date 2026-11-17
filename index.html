@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MemBridge — Universal AI Memory Teleport</title>
+  <link rel="stylesheet" href="./src/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">MB</div>
+        <div>
+          <h1>MemBridge</h1>
+          <p class="subtitle">Teleport your AI memory across ChatGPT, Claude, Gemini, DeepSeek &amp; coding agents</p>
+        </div>
+      </div>
+      <div class="topbar-badges">
+        <span class="pill pill-privacy">100% Local · Zero Upload</span>
+        <span id="format-badge" class="pill pill-neutral">Ready</span>
+      </div>
+    </header>
+
+    <nav class="stepper" aria-label="Workflow steps">
+      <div class="step active">
+        <span class="step-num">1</span>
+        <span>Import Any AI</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step active">
+        <span class="step-num">2</span>
+        <span>Curate &amp; Redact</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step active">
+        <span class="step-num">3</span>
+        <span>1-Click Teleport</span>
+      </div>
+    </nav>
+
+    <main class="grid-layout">
+      <!-- STEP 1: IMPORT -->
+      <section class="panel" aria-labelledby="step1-title">
+        <div class="panel-header">
+          <div>
+            <h2 id="step1-title">1. Import Source</h2>
+            <p class="muted">Drop an export file, paste chat memories, or test a sample</p>
+          </div>
+          <button id="btn-clear" class="btn btn-ghost btn-sm" type="button">Reset</button>
+        </div>
+
+        <div class="quick-prompt-card">
+          <div class="quick-prompt-head">
+            <strong>No export file? Use the 10-second Quick-Extract Prompt</strong>
+            <button id="btn-copy-prompt" class="btn btn-secondary btn-sm" type="button">Copy Prompt</button>
+          </div>
+          <p class="muted small">
+            Paste this prompt into ChatGPT, Claude, Gemini, or DeepSeek, then paste the AI's reply below.
+          </p>
+        </div>
+
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop conversations.json or memory file here">
+          <input id="file-input" type="file" accept=".json,.md,.txt,.brain.json" hidden />
+          <div class="dropzone-icon">↑</div>
+          <p><strong>Drop file here</strong> or <span class="link-like">browse computer</span></p>
+          <p class="muted small">Supports ChatGPT / Claude <code>conversations.json</code>, <code>.brain.json</code>, <code>.md</code>, <code>.txt</code></p>
+        </div>
+
+        <div class="sample-row">
+          <span class="muted small">Try instant demo:</span>
+          <button class="btn btn-chip" data-sample="chatgpt" type="button">ChatGPT Export</button>
+          <button class="btn btn-chip" data-sample="claude" type="button">Claude Export</button>
+          <button class="btn btn-chip" data-sample="raw" type="button">Developer Profile</button>
+        </div>
+
+        <label class="field-label" for="raw-input">Or paste memories / prompt output directly:</label>
+        <textarea
+          id="raw-input"
+          class="textarea-input"
+          rows="7"
+          placeholder="Paste your AI memories, custom instructions, or JSON here..."
+        ></textarea>
+
+        <div class="actions-row">
+          <button id="btn-extract" class="btn btn-primary" type="button">Extract &amp; Distill Memories</button>
+          <span id="import-status" class="muted small"></span>
+        </div>
+      </section>
+
+      <!-- STEP 2: CURATE -->
+      <section class="panel" aria-labelledby="step2-title">
+        <div class="panel-header">
+          <div>
+            <h2 id="step2-title">2. Visual Brain Editor</h2>
+            <p class="muted">Edit, toggle, or clean memories before moving them</p>
+          </div>
+          <label class="toggle-wrap" title="Automatically mask API keys, tokens, and emails">
+            <input id="toggle-redact" type="checkbox" checked />
+            <span>Auto-Redact Secrets</span>
+          </label>
+        </div>
+
+        <div id="category-tabs" class="tabs-row" role="tablist" aria-label="Memory categories"></div>
+
+        <div class="editor-toolbar">
+          <input
+            id="search-input"
+            class="input-control"
+            type="search"
+            placeholder="Filter memories..."
+            aria-label="Filter memories"
+          />
+          <form id="add-form" class="add-form">
+            <select id="add-category" class="select-control" aria-label="New memory category">
+              <option value="identity">Identity</option>
+              <option value="projects">Projects</option>
+              <option value="stack">Tech Stack</option>
+              <option value="preferences" selected>Preferences</option>
+              <option value="rules">Rules</option>
+            </select>
+            <input
+              id="add-text"
+              class="input-control"
+              type="text"
+              placeholder="Add a new memory fact..."
+              aria-label="New memory text"
+            />
+            <button class="btn btn-secondary" type="submit">+ Add</button>
+          </form>
+        </div>
+
+        <div id="memory-list" class="memory-list" aria-live="polite"></div>
+      </section>
+
+      <!-- STEP 3: TELEPORT -->
+      <section class="panel panel-wide" aria-labelledby="step3-title">
+        <div class="panel-header">
+          <div>
+            <h2 id="step3-title">3. 1-Click Teleport</h2>
+            <p class="muted">Pick your destination AI — formatted specifically for how it reads memory</p>
+          </div>
+          <div class="metrics-bar">
+            <span id="metric-items" class="metric-pill">0 active</span>
+            <span id="metric-tokens" class="metric-pill">~0 tokens</span>
+            <span id="metric-saved" class="metric-pill metric-accent">0% compressed</span>
+          </div>
+        </div>
+
+        <div id="target-tabs" class="target-grid" role="tablist" aria-label="Destination AI platform"></div>
+
+        <div id="target-guide" class="guide-banner"></div>
+
+        <textarea id="output-preview" class="textarea-output" rows="11" readonly aria-label="Formatted output"></textarea>
+
+        <div class="actions-row actions-between">
+          <div class="actions-left">
+            <button id="btn-copy-output" class="btn btn-primary" type="button">Copy for Destination AI</button>
+            <button id="btn-download" class="btn btn-secondary" type="button">Download File</button>
+          </div>
+          <a id="btn-open-target" class="btn btn-ghost" href="#" target="_blank" rel="noopener noreferrer" hidden>
+            Open Target AI ↗
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="./src/core/engine.js"></script>
+  <script src="./src/app.js"></script>
+</body>
+</html>

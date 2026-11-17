@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MemBridge Extension</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 340px;
+      padding: 14px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0b1020;
+      color: #eef2ff;
+    }
+    .head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    h1 { font-size: 15px; margin: 0; }
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #192242;
+      border: 1px solid #283562;
+      color: #a5b4fc;
+    }
+    .card {
+      background: #121931;
+      border: 1px solid #283562;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .muted { color: #9aa7cc; font-size: 12px; margin: 4px 0 0; }
+    textarea {
+      width: 100%;
+      margin-top: 8px;
+      background: #0b1020;
+      color: #eef2ff;
+      border: 1px solid #283562;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 11px;
+      font-family: ui-monospace, monospace;
+      resize: vertical;
+    }
+    .row { display: flex; gap: 8px; margin-top: 8px; }
+    button {
+      flex: 1;
+      border: 1px solid #283562;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #192242;
+      color: #eef2ff;
+    }
+    button.primary {
+      background: #6366f1;
+      border-color: #6366f1;
+      color: #fff;
+    }
+    button.accent {
+      background: #10b981;
+      border-color: #10b981;
+      color: #052e16;
+    }
+    .status {
+      font-size: 11px;
+      color: #6ee7b7;
+      min-height: 16px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="head">
+    <h1>MemBridge</h1>
+    <span id="site-badge" class="badge">Detecting...</span>
+  </div>
+
+  <div class="card">
+    <strong>1. Capture from current tab</strong>
+    <p class="muted">Grabs selected text, visible memories, or your chat messages locally.</p>
+    <div class="row">
+      <button id="btn-extract" class="primary" type="button">Extract Brain</button>
+      <button id="btn-clear" type="button">Clear</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>2. Stored Memory Bridge (<span id="count">0</span> items)</strong>
+    <textarea id="preview" rows="6" placeholder="Nothing captured yet..."></textarea>
+    <div class="row">
+      <button id="btn-inject" class="accent" type="button">Inject Into Chat</button>
+      <button id="btn-export" type="button">Save .brain.json</button>
+    </div>
+    <div id="status" class="status"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

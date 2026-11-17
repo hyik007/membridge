@@ -1,0 +1,25 @@
+{
+  "name": "membridge",
+  "version": "1.0.0",
+  "description": "Universal AI Memory Teleport — Move your context, preferences, and projects across ChatGPT, Claude, Gemini, DeepSeek, and coding agents in 1 click.",
+  "type": "module",
+  "main": "./src/core/engine.mjs",
+  "bin": {
+    "membridge": "./bin/cli.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/test.js"
+  },
+  "keywords": [
+    "ai-memory",
+    "chatgpt",
+    "claude",
+    "gemini",
+    "deepseek",
+    "mcp",
+    "portable-memory",
+    "llm-tools"
+  ],
+  "license": "MIT"
+}

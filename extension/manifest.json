@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "MemBridge — Universal AI Memory Teleport",
+  "version": "1.0.0",
+  "description": "1-click extract memories or context from ChatGPT, Claude, Gemini, or DeepSeek and inject them into any other AI chat.",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://chat.deepseek.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "MemBridge — Teleport AI Memory"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://chat.deepseek.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
