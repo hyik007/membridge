@@ -2,6 +2,8 @@
 
 Move your **identity, active projects, tech stack, preferences, and rules** across **ChatGPT, Claude, Gemini, DeepSeek, Grok, and coding agents** in 1 click—**100% locally** in your browser with zero cloud uploads.
 
+**Live App:** https://membridge.vercel.app
+
 ```mermaid
 flowchart LR
   A["ChatGPT / Claude / Gemini / Text"] -->|"Drop file or Quick-Extract"| B["MemBridge Smart Distiller"]
