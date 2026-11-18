@@ -57,6 +57,28 @@ node bin/cli.js conversations.json --to markdown --out MEMORY.md
 node bin/cli.js membridge.brain.json --to gemini
 ```
 
+### 4. MCP Server (use MemBridge from Claude Desktop, Cursor, Antigravity, etc.)
+MemBridge ships a zero-dependency [Model Context Protocol](https://modelcontextprotocol.io) server over stdio. It exposes three tools:
+
+| Tool | What it does |
+|---|---|
+| `membridge_extract` | Extract and categorize memories from text, a `conversations.json`, or a `.brain.json` |
+| `membridge_format` | Convert memories to a ready-to-paste pack for `claude`, `chatgpt`, `gemini`, `deepseek`, `markdown`, or `json` |
+| `membridge_redact` | Mask API keys, tokens, and emails in any text |
+
+Add it to your MCP client config:
+```json
+{
+  "mcpServers": {
+    "membridge": {
+      "command": "node",
+      "args": ["/absolute/path/to/membridge/bin/mcp.js"]
+    }
+  }
+}
+```
+Then ask your assistant: *"Use membridge to convert ~/Downloads/conversations.json into a Claude memory pack."*
+
 ---
 
 ## Open `.brain.json` Format
