@@ -77,6 +77,17 @@ node bin/cli.js membridge.brain.json --to gemini
 }
 ```
 
+## FAQ & Privacy
+
+**Does MemBridge upload my chats anywhere?**
+No. Parsing, categorizing, and redaction all run locally in your browser (or in Node for the CLI). There are zero runtime dependencies and no network calls.
+
+**Which exports are supported?**
+ChatGPT `conversations.json`, Claude `conversations.json`, `.brain.json`, Markdown, and plain text. Gemini/Takeout JSON is handled by a generic parser.
+
+**Are my API keys safe?**
+Secret redaction is on by default and masks `sk-...`, `ghp_...`, `AIza...`, AWS keys, bearer tokens, and emails before anything is copied or downloaded.
+
 ## Run Tests
 ```bash
 npm test
