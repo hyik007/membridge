@@ -1,5 +1,10 @@
 # MemBridge — Universal AI Memory Teleport
 
+[![Tests](https://github.com/hyik007/membridge/actions/workflows/test.yml/badge.svg)](https://github.com/hyik007/membridge/actions/workflows/test.yml)
+[![Release](https://img.shields.io/github/v/release/hyik007/membridge?color=6366f1)](https://github.com/hyik007/membridge/releases/latest)
+[![Live App](https://img.shields.io/badge/Live_App-membridge.vercel.app-10b981)](https://membridge.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Move your **identity, active projects, tech stack, preferences, and rules** across **ChatGPT, Claude, Gemini, DeepSeek, Grok, and coding agents** in 1 click—**100% locally** in your browser with zero cloud uploads.
 
 **Live App:** https://membridge.vercel.app
