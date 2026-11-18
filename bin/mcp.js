@@ -4,17 +4,24 @@
 import { createInterface } from 'node:readline';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { TARGETS, parseInput, formatForTarget, redactSecrets } from '../src/core/engine.mjs';
+import { EXTRACTION_PROMPT, TARGETS, parseInput, formatForTarget, redactSecrets } from '../src/core/engine.mjs';
 
 const SERVER_INFO = { name: 'membridge', version: '1.0.0' };
 const PROTOCOL_VERSION = '2024-11-05';
 const TARGET_IDS = Object.keys(TARGETS);
+const TOOL_ANNOTATIONS = {
+  readOnlyHint: true,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false,
+};
 
 const TOOLS = [
   {
     name: 'membridge_extract',
     description:
       'Extract and categorize portable memories (identity, projects, stack, preferences, rules) from raw text, a ChatGPT/Claude conversations.json export, or a .brain.json. Provide either "text" or "path".',
+    annotations: TOOL_ANNOTATIONS,
     inputSchema: {
       type: 'object',
       properties: {
@@ -27,6 +34,7 @@ const TOOLS = [
     name: 'membridge_format',
     description:
       'Convert memories into a ready-to-paste pack for a destination AI. Secrets (API keys, emails) are redacted by default.',
+    annotations: TOOL_ANNOTATIONS,
     inputSchema: {
       type: 'object',
       properties: {
@@ -41,11 +49,28 @@ const TOOLS = [
   {
     name: 'membridge_redact',
     description: 'Mask API keys, tokens, and emails in any text.',
+    annotations: TOOL_ANNOTATIONS,
     inputSchema: {
       type: 'object',
       properties: { text: { type: 'string' } },
       required: ['text'],
     },
+  },
+];
+
+const RESOURCES = [
+  {
+    uri: 'membridge://prompt/quick-extract',
+    name: 'Universal AI Memory Quick-Extract Prompt',
+    mimeType: 'text/plain',
+    description: 'Prompt to extract stored memories from any AI assistant.',
+  },
+];
+
+const PROMPTS = [
+  {
+    name: 'extract-ai-memory',
+    description: 'Prompt to dump all stored user memories from ChatGPT, Claude, or Gemini',
   },
 ];
 
@@ -99,7 +124,7 @@ async function handle(msg) {
         id,
         result: {
           protocolVersion: PROTOCOL_VERSION,
-          capabilities: { tools: {} },
+          capabilities: { tools: {}, resources: {}, prompts: {} },
           serverInfo: SERVER_INFO,
         },
       });
@@ -107,6 +132,34 @@ async function handle(msg) {
     if (method === 'notifications/initialized' || isNotification) return undefined;
     if (method === 'ping') return send({ jsonrpc: '2.0', id, result: {} });
     if (method === 'tools/list') return send({ jsonrpc: '2.0', id, result: { tools: TOOLS } });
+    if (method === 'resources/list') return send({ jsonrpc: '2.0', id, result: { resources: RESOURCES } });
+    if (method === 'resources/templates/list') return send({ jsonrpc: '2.0', id, result: { resourceTemplates: [] } });
+    if (method === 'resources/read') {
+      const uri = params && params.uri;
+      if (uri !== RESOURCES[0].uri) {
+        return send({ jsonrpc: '2.0', id, error: { code: -32602, message: `Unknown resource: ${uri}` } });
+      }
+      return send({
+        jsonrpc: '2.0',
+        id,
+        result: { contents: [{ uri, mimeType: 'text/plain', text: EXTRACTION_PROMPT }] },
+      });
+    }
+    if (method === 'prompts/list') return send({ jsonrpc: '2.0', id, result: { prompts: PROMPTS } });
+    if (method === 'prompts/get') {
+      const promptName = params && params.name;
+      if (promptName !== PROMPTS[0].name) {
+        return send({ jsonrpc: '2.0', id, error: { code: -32602, message: `Unknown prompt: ${promptName}` } });
+      }
+      return send({
+        jsonrpc: '2.0',
+        id,
+        result: {
+          description: PROMPTS[0].description,
+          messages: [{ role: 'user', content: { type: 'text', text: EXTRACTION_PROMPT } }],
+        },
+      });
+    }
     if (method === 'tools/call') {
       try {
         const text = await callTool(params && params.name, params && params.arguments);
