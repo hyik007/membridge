@@ -91,14 +91,26 @@ const TOOLS = [
   {
     name: 'membridge_recall',
     description:
-      'Search or retrieve saved memories from your local portable brain (~/.membridge/brain.json), optionally formatted for a specific AI platform.',
+      'Retrieve and search persisted user memories from the local portable brain (~/.membridge/brain.json). Use this before answering personalized questions or switching AI tools to recall identity, tech stack, active projects, preferences, or rules. Filter by optional keyword query and/or category, and optionally format the result for a specific target platform (e.g. claude, chatgpt, gemini, markdown, json). Returns JSON with matching memory count and items, or a formatted memory pack when target is provided.',
     annotations: TOOL_ANNOTATIONS,
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       properties: {
-        query: { type: 'string', description: 'Optional keyword filter.' },
-        category: { type: 'string', enum: CATEGORY_IDS, description: 'Optional category filter.' },
-        target: { type: 'string', enum: TARGET_IDS, description: 'Optional destination format (e.g. claude, markdown, json).' },
+        query: {
+          type: 'string',
+          description: 'Case-insensitive keyword substring to match against saved memory text (omit to return all saved memories).',
+        },
+        category: {
+          type: 'string',
+          enum: CATEGORY_IDS,
+          description: 'Restrict results to a single memory category: identity, projects, stack, preferences, rules, or context.',
+        },
+        target: {
+          type: 'string',
+          enum: TARGET_IDS,
+          description: 'Optional output formatter for the recalled memories (e.g. claude, chatgpt, gemini, deepseek, markdown, json). Omit for raw structured JSON.',
+        },
       },
     },
   },
