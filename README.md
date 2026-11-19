@@ -1,54 +1,58 @@
+<div align="center">
+
 # MemBridge — Universal AI Memory Teleport
 
-[![Tests](https://github.com/hyik007/membridge/actions/workflows/test.yml/badge.svg)](https://github.com/hyik007/membridge/actions/workflows/test.yml)
-[![Release](https://img.shields.io/github/v/release/hyik007/membridge?color=6366f1)](https://github.com/hyik007/membridge/releases/latest)
-[![Live App](https://img.shields.io/badge/Live_App-membridge.vercel.app-10b981)](https://membridge.vercel.app)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+**Move your identity, active projects, tech stack, preferences, and rules across ChatGPT, Claude, Gemini, DeepSeek, Grok, and coding agents in 1 click — 100% locally with zero dependencies.**
 
-Move your **identity, active projects, tech stack, preferences, and rules** across **ChatGPT, Claude, Gemini, DeepSeek, Grok, and coding agents** in 1 click—**100% locally** in your browser with zero cloud uploads.
+[![Try Live App](https://img.shields.io/badge/Try_Live_App-membridge.vercel.app-10b981?style=for-the-badge)](https://membridge.vercel.app)
+[![Tests](https://img.shields.io/github/actions/workflow/status/hyik007/membridge/test.yml?branch=main&label=Tests&style=for-the-badge)](https://github.com/hyik007/membridge/actions/workflows/test.yml)
+[![Release](https://img.shields.io/github/v/release/hyik007/membridge?color=6366f1&style=for-the-badge)](https://github.com/hyik007/membridge/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-**Live App:** https://membridge.vercel.app
+[![hyik007/membridge MCP server](https://glama.ai/mcp/servers/hyik007/membridge/badges/score.svg)](https://glama.ai/mcp/servers/hyik007/membridge)
 
-```mermaid
-flowchart LR
-  A["ChatGPT / Claude / Gemini / Text"] -->|"Drop file or Quick-Extract"| B["MemBridge Smart Distiller"]
-  B -->|"Categorize + Secret Redact"| C["Visual Brain Editor"]
-  C -->|"1-Click Format"| D["Claude XML"]
-  C -->|"1-Click Format"| E["ChatGPT Custom Instructions"]
-  C -->|"1-Click Format"| F["Gemini Saved Info"]
-  C -->|"1-Click Format"| G["MEMORY.md / .brain.json"]
-```
+<br />
 
-## Why MemBridge?
+<img src="./assets/hero-preview.svg" alt="MemBridge Studio Preview" width="100%" />
 
-| Feature | One-off Scripts | Vector DB / MCP Servers | **MemBridge** |
-|---|---|---|---|
-| Non-technical UI (Zero setup) | No | No (needs Docker/DB) | **Yes (Web Studio + Extension)** |
-| Works across *all* major AIs | Usually 1 -> 1 | Coding tools only | **N-to-N (ChatGPT, Claude, Gemini, DeepSeek, Agents)** |
-| Compresses noisy chat logs | Raw dumps | Raw chunks | **Smart signal extraction & token meter** |
-| Auto-redacts API keys & emails | No | No | **Built-in secret masker** |
-| 100% local & zero dependencies | Mixed | Often needs API keys | **Yes — 0 npm dependencies** |
+</div>
 
 ---
 
-## Quick Start (3 Ways to Use)
+## Why MemBridge?
+
+Switching from **ChatGPT -> Claude -> Gemini -> DeepSeek** shouldn't force you to re-explain who you are, your tech stack, and every active project from scratch.
+
+| Feature | One-off Scripts | Vector DB / Cloud Memory | **MemBridge v1.1** |
+|---|---|---|---|
+| Non-technical Web Studio (zero install) | No | No (needs DB/cloud account) | **Yes — [membridge.vercel.app](https://membridge.vercel.app)** |
+| Direct `.zip` drop (ChatGPT / Claude exports) | Manual unzip | Manual unzip | **Built-in browser unzip (0 deps)** |
+| Works across *all* major AIs | Usually 1 -> 1 | Coding tools only | **N-to-N (Claude, ChatGPT, Gemini, DeepSeek, MCP)** |
+| Persistent cross-agent MCP memory | No | Cloud / heavy setup | **`membridge_remember` & `membridge_recall` (`~/.membridge/brain.json`)** |
+| Optional AI Smart Compress | No | Paid cloud | **Local Ollama or BYO Key (direct from browser)** |
+| Auto-redacts API keys & emails | No | No | **Built-in secret masker (`sk-...`, `ghp_...`, AWS, emails)** |
+| Dependencies & Telemetry | Heavy | Cloud tracking | **0 npm dependencies · 100% local** |
+
+---
+
+## Quick Start (4 Ways to Use)
 
 ### 1. Zero-Install Web Studio (Easiest for Everyone)
-Double-click `index.html` directly in your browser **or** start the local server:
+Open **[membridge.vercel.app](https://membridge.vercel.app)**, double-click `index.html`, or run locally:
 
 ```bash
 npm start
 # Opens at http://127.0.0.1:4321
 ```
 
-1. **Import:** Drop `conversations.json` (from ChatGPT/Claude), `.brain.json`, or paste the built-in **10-Second Quick-Extract Prompt** output from any AI chat.
-2. **Curate:** Toggle, edit, recategorize, and auto-mask accidental secrets (`sk-...`, `ghp_...`, emails).
-3. **Teleport:** Pick **Claude**, **ChatGPT**, **Gemini**, **DeepSeek / Grok**, **`MEMORY.md`**, or **`.brain.json`** and click **Copy**.
+1. **Import:** Drop your official **ChatGPT/Claude `.zip` export**, `conversations.json`, `.brain.json`, or paste the built-in **10-Second Quick-Extract Prompt** output from any AI chat.
+2. **Curate & Redact:** Toggle, edit, recategorize, auto-mask accidental secrets, or run optional **AI Smart Compress** via local Ollama.
+3. **1-Click Teleport:** Export cleanly formatted for **Claude XML**, **ChatGPT Custom Instructions**, **Gemini Saved Info**, **DeepSeek/Grok**, **`MEMORY.md`**, or **`.brain.json`**.
 
 ### 2. Chrome / Edge Browser Extension (In-Tab Teleport)
-1. Open `chrome://extensions` (or `edge://extensions`) and turn on **Developer mode**.
-2. Click **Load unpacked** and select the `extension/` folder.
-3. Visit ChatGPT, Claude, Gemini, or DeepSeek -> click **Extract Brain** -> switch to another AI -> click **Inject Into Chat**.
+1. Download `membridge-chrome-extension.zip` from **[Releases](https://github.com/hyik007/membridge/releases/latest)** (or use the `extension/` folder).
+2. Open `chrome://extensions` (or `edge://extensions`), enable **Developer mode**, and click **Load unpacked**.
+3. Visit ChatGPT, Claude, Gemini, or DeepSeek -> click **Extract Brain** -> switch tabs -> click **Inject Into Chat**.
 
 ### 3. Developer CLI
 ```bash
@@ -62,16 +66,18 @@ node bin/cli.js conversations.json --to markdown --out MEMORY.md
 node bin/cli.js membridge.brain.json --to gemini
 ```
 
-### 4. MCP Server (use MemBridge from Claude Desktop, Cursor, Antigravity, etc.)
-MemBridge ships a zero-dependency [Model Context Protocol](https://modelcontextprotocol.io) server over stdio. It exposes three tools:
+### 4. Persistent MCP Server (Claude Desktop, Cursor, Antigravity, Windsurf)
+MemBridge ships a zero-dependency [Model Context Protocol](https://modelcontextprotocol.io) server over stdio with **5 tools**:
 
 | Tool | What it does |
 |---|---|
-| `membridge_extract` | Extract and categorize memories from text, a `conversations.json`, or a `.brain.json` |
-| `membridge_format` | Convert memories to a ready-to-paste pack for `claude`, `chatgpt`, `gemini`, `deepseek`, `markdown`, or `json` |
+| `membridge_remember` | Save a durable memory fact into `~/.membridge/brain.json` (auto-categorized & redacted) |
+| `membridge_recall` | Search saved memories by keyword/category and optionally format for any target AI |
+| `membridge_extract` | Extract and categorize memories from text, `conversations.json`, or `.brain.json` |
+| `membridge_format` | Convert memories into a ready-to-paste pack for `claude`, `chatgpt`, `gemini`, `deepseek`, `markdown`, or `json` |
 | `membridge_redact` | Mask API keys, tokens, and emails in any text |
 
-Add it to your MCP client config:
+Add to your MCP config:
 ```json
 {
   "mcpServers": {
@@ -82,38 +88,16 @@ Add it to your MCP client config:
   }
 }
 ```
-Then ask your assistant: *"Use membridge to convert ~/Downloads/conversations.json into a Claude memory pack."*
 
 ---
-
-## Open `.brain.json` Format
-```json
-{
-  "version": "1.0",
-  "format": "membridge.brain.json",
-  "exportedAt": "2026-11-18T00:00:00.000Z",
-  "memories": [
-    {
-      "id": "mem_0_1a2b",
-      "category": "identity",
-      "text": "Full-stack developer building local-first AI tools",
-      "source": "chatgpt-json",
-      "enabled": true
-    }
-  ]
-}
-```
 
 ## FAQ & Privacy
 
 **Does MemBridge upload my chats anywhere?**
-No. Parsing, categorizing, and redaction all run locally in your browser (or in Node for the CLI). There are zero runtime dependencies and no network calls.
-
-**Which exports are supported?**
-ChatGPT `conversations.json`, Claude `conversations.json`, `.brain.json`, Markdown, and plain text. Gemini/Takeout JSON is handled by a generic parser.
+No. `.zip` unzipping, parsing, categorizing, and secret redaction all run 100% locally in your browser (or in Node for CLI/MCP). The optional AI Smart Compress only calls the endpoint you explicitly choose (such as `localhost:11434` for local Ollama).
 
 **Are my API keys safe?**
-Secret redaction is on by default and masks `sk-...`, `ghp_...`, `AIza...`, AWS keys, bearer tokens, and emails before anything is copied or downloaded.
+Secret redaction is enabled by default and masks `sk-...`, `ghp_...`, `AIza...`, AWS keys, bearer tokens, and emails before copying, downloading, or saving.
 
 ## Run Tests
 ```bash
@@ -121,4 +105,4 @@ npm test
 ```
 
 ## License
-MIT
+MIT — If MemBridge saved you time, a **Star ⭐** helps more people discover it!

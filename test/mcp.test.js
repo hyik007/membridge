@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+const tmpBrain = path.join(os.tmpdir(), `membridge-test-${Date.now()}.brain.json`);
 const server = spawn(process.execPath, [path.join(here, '..', 'bin', 'mcp.js')], {
   stdio: ['pipe', 'pipe', 'inherit'],
+  env: { ...process.env, MEMBRIDGE_BRAIN_PATH: tmpBrain },
 });
 
 const pending = new Map();
@@ -46,10 +50,17 @@ try {
     clientInfo: { name: 'test', version: '0' },
   });
   assert.equal(init.result.serverInfo.name, 'membridge');
+  assert.equal(init.result.serverInfo.version, '1.1.0');
 
   const list = await rpc('tools/list', {});
   const names = list.result.tools.map((t) => t.name).sort();
-  assert.deepEqual(names, ['membridge_extract', 'membridge_format', 'membridge_redact']);
+  assert.deepEqual(names, [
+    'membridge_extract',
+    'membridge_format',
+    'membridge_recall',
+    'membridge_redact',
+    'membridge_remember',
+  ]);
 
   const redact = await rpc('tools/call', {
     name: 'membridge_redact',
@@ -67,10 +78,25 @@ try {
   });
   assert.ok(fmt.result.content[0].text.includes('<user_profile>'));
 
+  const rem = await rpc('tools/call', {
+    name: 'membridge_remember',
+    arguments: { text: 'Always write clean TypeScript and redact sk-proj-secret1234567890abcd' },
+  });
+  const remObj = JSON.parse(rem.result.content[0].text);
+  assert.equal(remObj.saved, true);
+  assert.ok(!remObj.text.includes('sk-proj-secret'));
+
+  const rec = await rpc('tools/call', {
+    name: 'membridge_recall',
+    arguments: { query: 'TypeScript', target: 'markdown' },
+  });
+  assert.ok(rec.result.content[0].text.includes('TypeScript'));
+
   const bad = await rpc('tools/call', { name: 'membridge_format', arguments: { target: 'nope', text: 'x' } });
   assert.equal(bad.result.isError, true);
 
   console.log('MCP SERVER TESTS PASSED');
 } finally {
   server.kill();
+  await fs.rm(tmpBrain, { force: true }).catch(() => {});
 }

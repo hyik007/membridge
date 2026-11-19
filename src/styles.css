@@ -586,3 +586,30 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
+
+.ai-compress-card {
+  background: rgba(16, 185, 129, 0.07);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.ai-compress-card summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #6ee7b7;
+}
+
+.ai-preset-row {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.ai-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}

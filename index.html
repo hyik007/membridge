@@ -60,11 +60,11 @@
           </p>
         </div>
 
-        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop conversations.json or memory file here">
-          <input id="file-input" type="file" accept=".json,.md,.txt,.brain.json" hidden />
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop .zip, conversations.json, or memory file here">
+          <input id="file-input" type="file" accept=".zip,.json,.md,.txt,.brain.json" hidden />
           <div class="dropzone-icon">↑</div>
-          <p><strong>Drop file here</strong> or <span class="link-like">browse computer</span></p>
-          <p class="muted small">Supports ChatGPT / Claude <code>conversations.json</code>, <code>.brain.json</code>, <code>.md</code>, <code>.txt</code></p>
+          <p><strong>Drop .zip or file here</strong> or <span class="link-like">browse computer</span></p>
+          <p class="muted small">Direct <code>.zip</code> unzip for ChatGPT/Claude exports, plus <code>conversations.json</code>, <code>.brain.json</code>, <code>.md</code>, <code>.txt</code></p>
         </div>
 
         <div class="sample-row">
@@ -86,6 +86,26 @@
           <button id="btn-extract" class="btn btn-primary" type="button">Extract &amp; Distill Memories</button>
           <span id="import-status" class="muted small"></span>
         </div>
+
+        <details class="ai-compress-card">
+          <summary>Optional: AI Smart Compress (Local Ollama or BYO Key)</summary>
+          <p class="muted small">
+            Direct from your browser to local Ollama or any OpenAI-compatible API. Secrets are redacted before sending when Auto-Redact is on.
+          </p>
+          <div class="ai-preset-row">
+            <button id="preset-ollama" class="btn btn-chip" type="button">Local Ollama</button>
+            <button id="preset-openai" class="btn btn-chip" type="button">OpenAI API</button>
+          </div>
+          <div class="ai-fields">
+            <input id="ai-endpoint" class="input-control" type="url" value="http://localhost:11434/v1/chat/completions" placeholder="API Endpoint URL" aria-label="AI Endpoint URL" />
+            <input id="ai-model" class="input-control" type="text" value="llama3.2" placeholder="Model name (e.g. llama3.2, gpt-4o-mini)" aria-label="AI Model" />
+            <input id="ai-key" class="input-control" type="password" placeholder="API Key (leave blank for local Ollama)" aria-label="Optional API Key" />
+          </div>
+          <div class="actions-row">
+            <button id="btn-ai-compress" class="btn btn-secondary btn-sm" type="button">Smart Compress with AI</button>
+            <span id="ai-status" class="muted small"></span>
+          </div>
+        </details>
       </section>
 
       <!-- STEP 2: CURATE -->
@@ -169,6 +189,7 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="./src/core/engine.js"></script>
+  <script src="./src/core/zip.js"></script>
   <script src="./src/app.js"></script>
 </body>
 </html>

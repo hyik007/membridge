@@ -3,14 +3,31 @@
 // Lets any MCP client extract, format, and redact portable AI memories.
 import { createInterface } from 'node:readline';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
-import { EXTRACTION_PROMPT, TARGETS, parseInput, formatForTarget, redactSecrets } from '../src/core/engine.mjs';
+import {
+  CATEGORIES,
+  EXTRACTION_PROMPT,
+  TARGETS,
+  inferCategory,
+  parseInput,
+  formatForTarget,
+  redactSecrets,
+} from '../src/core/engine.mjs';
 
-const SERVER_INFO = { name: 'membridge', version: '1.0.0' };
+const SERVER_INFO = { name: 'membridge', version: '1.1.0' };
 const PROTOCOL_VERSION = '2024-11-05';
 const TARGET_IDS = Object.keys(TARGETS);
+const CATEGORY_IDS = Object.keys(CATEGORIES);
+const BRAIN_PATH = process.env.MEMBRIDGE_BRAIN_PATH || path.join(os.homedir(), '.membridge', 'brain.json');
 const TOOL_ANNOTATIONS = {
   readOnlyHint: true,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false,
+};
+const WRITE_ANNOTATIONS = {
+  readOnlyHint: false,
   destructiveHint: false,
   idempotentHint: true,
   openWorldHint: false,
@@ -56,6 +73,35 @@ const TOOLS = [
       required: ['text'],
     },
   },
+  {
+    name: 'membridge_remember',
+    description:
+      'Save a durable memory fact into your local portable brain file (~/.membridge/brain.json) so it persists across Claude, Cursor, Antigravity, and other MCP clients.',
+    annotations: WRITE_ANNOTATIONS,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Fact, preference, project, or rule to remember.' },
+        category: { type: 'string', enum: CATEGORY_IDS, description: 'Optional category (auto-detected if omitted).' },
+        redact: { type: 'boolean', description: 'Mask secrets before saving (default true).' },
+      },
+      required: ['text'],
+    },
+  },
+  {
+    name: 'membridge_recall',
+    description:
+      'Search or retrieve saved memories from your local portable brain (~/.membridge/brain.json), optionally formatted for a specific AI platform.',
+    annotations: TOOL_ANNOTATIONS,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'Optional keyword filter.' },
+        category: { type: 'string', enum: CATEGORY_IDS, description: 'Optional category filter.' },
+        target: { type: 'string', enum: TARGET_IDS, description: 'Optional destination format (e.g. claude, markdown, json).' },
+      },
+    },
+  },
 ];
 
 const RESOURCES = [
@@ -85,9 +131,71 @@ async function loadInput(args) {
   throw new Error('Provide either "text" or "path".');
 }
 
+async function loadBrain() {
+  try {
+    const raw = await fs.readFile(BRAIN_PATH, 'utf8');
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed.memories) ? parsed.memories : [];
+  } catch (_err) {
+    return [];
+  }
+}
+
+async function saveBrain(memories) {
+  await fs.mkdir(path.dirname(BRAIN_PATH), { recursive: true });
+  const payload = {
+    version: '1.0',
+    format: 'membridge.brain.json',
+    exportedAt: new Date().toISOString(),
+    memories,
+  };
+  await fs.writeFile(BRAIN_PATH, JSON.stringify(payload, null, 2), 'utf8');
+}
+
 async function callTool(name, args = {}) {
   if (name === 'membridge_redact') {
     return redactSecrets(String(args.text || ''));
+  }
+  if (name === 'membridge_remember') {
+    const rawText = String(args.text || '').trim();
+    if (!rawText) throw new Error('Provide non-empty "text" to remember.');
+    const finalText = args.redact === false ? rawText : redactSecrets(rawText);
+    const category = CATEGORY_IDS.includes(args.category) ? args.category : inferCategory(finalText);
+    const memories = await loadBrain();
+    const norm = finalText.toLowerCase();
+    const existing = memories.find((m) => String(m.text || '').toLowerCase() === norm);
+    if (!existing) {
+      memories.unshift({
+        id: `mem_${Date.now().toString(36)}`,
+        category,
+        text: finalText,
+        source: 'mcp-remember',
+        enabled: true,
+      });
+      await saveBrain(memories);
+    }
+    return JSON.stringify(
+      { saved: !existing, duplicate: Boolean(existing), category, text: finalText, totalMemories: memories.length, path: BRAIN_PATH },
+      null,
+      2
+    );
+  }
+  if (name === 'membridge_recall') {
+    const memories = await loadBrain();
+    const q = String(args.query || '').trim().toLowerCase();
+    const cat = args.category;
+    const filtered = memories.filter((m) => {
+      if (cat && m.category !== cat) return false;
+      if (q && !String(m.text || '').toLowerCase().includes(q)) return false;
+      return m.enabled !== false;
+    });
+    if (args.target) {
+      if (!TARGETS[args.target]) {
+        throw new Error(`Unknown target "${args.target}". Valid: ${TARGET_IDS.join(', ')}`);
+      }
+      return formatForTarget(filtered, args.target, { redact: true }).output;
+    }
+    return JSON.stringify({ count: filtered.length, path: BRAIN_PATH, memories: filtered }, null, 2);
   }
   if (name === 'membridge_extract') {
     const { raw, name: fileName } = await loadInput(args);

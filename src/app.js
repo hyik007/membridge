@@ -10,6 +10,7 @@
     parseInput,
     formatForTarget,
     hasSecret,
+    redactSecrets,
   } = window.MemBridge;
 
   const STORAGE_KEY = 'membridge_state_v1';
@@ -325,8 +326,24 @@
     });
   });
 
-  function handleFile(file) {
+  async function handleFile(file) {
     if (!file) return;
+    if (file.name.toLowerCase().endsWith('.zip') && window.MemBridgeZip) {
+      try {
+        els.importStatus.textContent = `Unzipping ${file.name} locally...`;
+        const buf = await file.arrayBuffer();
+        const extracted = await window.MemBridgeZip.extractBestTextFromZip(buf);
+        const content = extracted.content || '';
+        els.rawInput.value = content.length > 50000 ? `${content.slice(0, 50000)}\n... [preview truncated, full file parsed]` : content;
+        runExtraction(content, extracted.fileName);
+        showToast(`Unzipped ${extracted.fileName} from ${file.name}`);
+      } catch (err) {
+        els.importStatus.textContent = `ZIP error: ${err.message}`;
+        showToast(err.message);
+      }
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (ev) => {
       const content = String(ev.target.result || '');
@@ -335,6 +352,82 @@
       showToast(`Imported ${file.name}`);
     };
     reader.readAsText(file);
+  }
+
+  const presetOllama = document.getElementById('preset-ollama');
+  const presetOpenAI = document.getElementById('preset-openai');
+  const aiEndpointEl = document.getElementById('ai-endpoint');
+  const aiModelEl = document.getElementById('ai-model');
+  const aiKeyEl = document.getElementById('ai-key');
+  const btnAiCompress = document.getElementById('btn-ai-compress');
+  const aiStatusEl = document.getElementById('ai-status');
+
+  if (presetOllama) {
+    presetOllama.addEventListener('click', () => {
+      aiEndpointEl.value = 'http://localhost:11434/v1/chat/completions';
+      aiModelEl.value = 'llama3.2';
+      aiKeyEl.value = '';
+      showToast('Configured for local Ollama');
+    });
+  }
+  if (presetOpenAI) {
+    presetOpenAI.addEventListener('click', () => {
+      aiEndpointEl.value = 'https://api.openai.com/v1/chat/completions';
+      aiModelEl.value = 'gpt-4o-mini';
+      showToast('Configured for OpenAI API');
+    });
+  }
+  if (btnAiCompress) {
+    btnAiCompress.addEventListener('click', async () => {
+      const endpoint = (aiEndpointEl.value || '').trim();
+      const model = (aiModelEl.value || '').trim();
+      const apiKey = (aiKeyEl.value || '').trim();
+      const sourceText = state.memories.length
+        ? state.memories.map((m) => `- ${m.text}`).join('\n')
+        : (els.rawInput.value || '').trim();
+      if (!endpoint || !model || !sourceText) {
+        aiStatusEl.textContent = 'Provide input text, endpoint, and model first.';
+        return;
+      }
+
+      const safePayload = (state.redact ? redactSecrets(sourceText) : sourceText).slice(0, 16000);
+      btnAiCompress.disabled = true;
+      aiStatusEl.textContent = `Compressing with ${model}...`;
+
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            model,
+            temperature: 0.2,
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'Distill user context into concise, factual Markdown bullets grouped under these exact headings: ## Identity & Role, ## Active Projects, ## Tech & Tools, ## Style & Preferences, ## Rules & Constraints. Keep under 20 bullets total and omit sensitive secrets.',
+              },
+              { role: 'user', content: safePayload },
+            ],
+          }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        const distilled = json.choices && json.choices[0] && json.choices[0].message && json.choices[0].message.content;
+        if (!distilled) throw new Error('Empty response from model');
+        els.rawInput.value = distilled;
+        runExtraction(distilled, `ai-${model}.md`);
+        aiStatusEl.textContent = `Compressed with ${model}!`;
+        showToast('AI Smart Compress complete!');
+      } catch (err) {
+        aiStatusEl.textContent = `Failed: ${err.message} (check Ollama CORS or API key)`;
+      } finally {
+        btnAiCompress.disabled = false;
+      }
+    });
   }
 
   els.dropzone.addEventListener('click', () => els.fileInput.click());

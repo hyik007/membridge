@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 520" width="1120" height="520" role="img" aria-label="MemBridge Studio Preview: Import any AI export, curate and redact memories, and teleport to Claude, ChatGPT, Gemini, DeepSeek, or MCP">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="55%" stop-color="#111936"/>
+      <stop offset="100%" stop-color="#0a1628"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Canvas -->
+  <rect width="1120" height="520" rx="20" fill="url(#bg)"/>
+  <rect x="1" y="1" width="1118" height="518" rx="19" fill="none" stroke="#283562" stroke-width="2"/>
+
+  <!-- Top App Bar -->
+  <rect x="28" y="24" width="1064" height="58" rx="14" fill="#121931" stroke="#283562"/>
+  <rect x="44" y="37" width="34" height="34" rx="9" fill="url(#accent)"/>
+  <text x="61" y="59" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="800">MB</text>
+  <text x="92" y="50" fill="#eef2ff" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="800">MemBridge v1.1</text>
+  <text x="92" y="67" fill="#9aa7cc" font-family="system-ui, -apple-system, sans-serif" font-size="11.5">Universal AI Memory Teleport · Web Studio + Chrome Extension + CLI + MCP</text>
+
+  <rect x="752" y="39" width="166" height="28" rx="14" fill="#0d2f2a" stroke="#10b981" stroke-opacity="0.55"/>
+  <text x="835" y="57" text-anchor="middle" fill="#6ee7b7" font-family="system-ui, sans-serif" font-size="11.5" font-weight="700">100% Local · 0 Cloud</text>
+  <rect x="930" y="39" width="144" height="28" rx="14" fill="#1e2749" stroke="#6366f1" stroke-opacity="0.6"/>
+  <text x="1002" y="57" text-anchor="middle" fill="#c7d2fe" font-family="system-ui, sans-serif" font-size="11.5" font-weight="700">membridge.vercel.app</text>
+
+  <!-- Step 1 Card -->
+  <g filter="url(#shadow)">
+    <rect x="28" y="102" width="320" height="390" rx="16" fill="#121931" stroke="#283562"/>
+  </g>
+  <circle cx="54" cy="130" r="12" fill="#6366f1"/>
+  <text x="54" y="134" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="800">1</text>
+  <text x="76" y="135" fill="#eef2ff" font-family="system-ui, sans-serif" font-size="15" font-weight="700">Import Any AI</text>
+
+  <!-- Dropzone -->
+  <rect x="46" y="156" width="284" height="108" rx="12" fill="#0d1428" stroke="#6366f1" stroke-dasharray="6 5" stroke-width="1.8"/>
+  <text x="188" y="196" text-anchor="middle" fill="#818cf8" font-family="system-ui, sans-serif" font-size="22" font-weight="800">↑</text>
+  <text x="188" y="219" text-anchor="middle" fill="#eef2ff" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Drop .zip or conversations.json</text>
+  <text x="188" y="239" text-anchor="middle" fill="#9aa7cc" font-family="system-ui, sans-serif" font-size="11">ChatGPT · Claude · Gemini · .brain.json</text>
+
+  <!-- Quick Extract Box -->
+  <rect x="46" y="280" width="284" height="72" rx="10" fill="#171f40" stroke="#4f46e5" stroke-opacity="0.5"/>
+  <text x="60" y="302" fill="#c7d2fe" font-family="system-ui, sans-serif" font-size="12" font-weight="700">10-Second Quick-Extract Prompt</text>
+  <text x="60" y="321" fill="#9aa7cc" font-family="system-ui, sans-serif" font-size="11">No export file? Copy prompt into any AI</text>
+  <text x="60" y="337" fill="#9aa7cc" font-family="system-ui, sans-serif" font-size="11">chat and paste its reply right here.</text>
+
+  <!-- Ollama / AI Compress Pill -->
+  <rect x="46" y="368" width="284" height="50" rx="10" fill="#0f2523" stroke="#10b981" stroke-opacity="0.45"/>
+  <text x="60" y="389" fill="#6ee7b7" font-family="system-ui, sans-serif" font-size="12" font-weight="700">Optional: AI Smart Compress</text>
+  <text x="60" y="406" fill="#9aa7cc" font-family="system-ui, sans-serif" font-size="11">Local Ollama or BYO OpenAI-compatible key</text>
+
+  <!-- Action CTA -->
+  <rect x="46" y="434" width="284" height="38" rx="10" fill="#6366f1"/>
+  <text x="188" y="458" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Extract &amp; Distill Memories</text>
+
+  <!-- Arrow 1->2 -->
+  <path d="M352 296 L380 296" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round"/>
+  <polygon points="384,296 375,290 375,302" fill="#6366f1"/>
+
+  <!-- Step 2 Card -->
+  <g filter="url(#shadow)">
+    <rect x="388" y="102" width="344" height="390" rx="16" fill="#121931" stroke="#283562"/>
+  </g>
+  <circle cx="414" cy="130" r="12" fill="#6366f1"/>
+  <text x="414" y="134" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="800">2</text>
+  <text x="436" y="135" fill="#eef2ff" font-family="system-ui, sans-serif" font-size="15" font-weight="700">Curate &amp; Redact</text>
+  <rect x="592" y="117" width="124" height="24" rx="12" fill="#312412" stroke="#f59e0b" stroke-opacity="0.6"/>
+  <text x="654" y="133" text-anchor="middle" fill="#fde68a" font-family="system-ui, sans-serif" font-size="11" font-weight="700">Secrets Masked ✓</text>
+
+  <!-- Memory Card 1 -->
+  <rect x="406" y="156" width="308" height="68" rx="10" fill="#0b1020" stroke="#283562"/>
+  <rect x="418" y="167" width="60" height="18" rx="5" fill="#1e2749"/>
+  <text x="448" y="180" text-anchor="middle" fill="#a5b4fc" font-family="system-ui, sans-serif" font-size="10.5" font-weight="700">Identity</text>
+  <text x="418" y="206" fill="#eef2ff" font-family="system-ui, sans-serif" font-size="12">Full-stack developer building local-first AI tools</text>
+
+  <!-- Memory Card 2 -->
+  <rect x="406" y="236" width="308" height="68" rx="10" fill="#0b1020" stroke="#283562"/>
+  <rect x="418" y="247" width="68" height="18" rx="5" fill="#1e2749"/>
+  <text x="452" y="260" text-anchor="middle" fill="#a5b4fc" font-family="system-ui, sans-serif" font-size="10.5" font-weight="700">Tech Stack</text>
+  <text x="418" y="286" fill="#eef2ff" font-family="system-ui, sans-serif" font-size="12">TypeScript, React, Node.js, Tailwind CSS, SQLite</text>
+
+  <!-- Memory Card 3 (Redacted Secret) -->
+  <rect x="406" y="316" width="308" height="68" rx="10" fill="#0b1020" stroke="#ef4444" stroke-opacity="0.5"/>
+  <rect x="418" y="327" width="60" height="18" rx="5" fill="#1e2749"/>
+  <text x="448" y="340" text-anchor="middle" fill="#a5b4fc" font-family="system-ui, sans-serif" font-size="10.5" font-weight="700">Prefs</text>
+  <rect x="486" y="327" width="90" height="18" rx="9" fill="#3a161b" stroke="#ef4444" stroke-opacity="0.5"/>
+  <text x="531" y="340" text-anchor="middle" fill="#fca5a5" font-family="system-ui, sans-serif" font-size="10" font-weight="700">Secret Masked</text>
+  <text x="418" y="366" fill="#eef2ff" font-family="ui-monospace, monospace" font-size="11.5">Key [REDACTED_API_KEY] · [REDACTED_EMAIL]</text>
+
+  <!-- Memory Card 4 -->
+  <rect x="406" y="396" width="308" height="68" rx="10" fill="#0b1020" stroke="#283562"/>
+  <rect x="418" y="407" width="46" height="18" rx="5" fill="#1e2749"/>
+  <text x="441" y="420" text-anchor="middle" fill="#a5b4fc" font-family="system-ui, sans-serif" font-size="10.5" font-weight="700">Rules</text>
+  <text x="418" y="446" fill="#eef2ff" font-family="system-ui, sans-serif" font-size="12">Always reply concisely with copy-pasteable code</text>
+
+  <!-- Arrow 2->3 -->
+  <path d="M736 296 L764 296" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+  <polygon points="768,296 759,290 759,302" fill="#10b981"/>
+
+  <!-- Step 3 Card -->
+  <g filter="url(#shadow)">
+    <rect x="772" y="102" width="320" height="390" rx="16" fill="#121931" stroke="#283562"/>
+  </g>
+  <circle cx="798" cy="130" r="12" fill="#10b981"/>
+  <text x="798" y="134" text-anchor="middle" fill="#052e16" font-family="system-ui, sans-serif" font-size="12" font-weight="800">3</text>
+  <text x="820" y="135" fill="#eef2ff" font-family="system-ui, sans-serif" font-size="15" font-weight="700">1-Click Teleport</text>
+
+  <!-- Target Tabs -->
+  <rect x="790" y="156" width="66" height="26" rx="7" fill="#6366f1"/>
+  <text x="823" y="173" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="11" font-weight="700">Claude</text>
+  <rect x="862" y="156" width="68" height="26" rx="7" fill="#0b1020" stroke="#283562"/>
+  <text x="896" y="173" text-anchor="middle" fill="#9aa7cc" font-family="system-ui, sans-serif" font-size="11" font-weight="600">ChatGPT</text>
+  <rect x="936" y="156" width="62" height="26" rx="7" fill="#0b1020" stroke="#283562"/>
+  <text x="967" y="173" text-anchor="middle" fill="#9aa7cc" font-family="system-ui, sans-serif" font-size="11" font-weight="600">Gemini</text>
+  <rect x="1004" y="156" width="70" height="26" rx="7" fill="#0b1020" stroke="#283562"/>
+  <text x="1039" y="173" text-anchor="middle" fill="#9aa7cc" font-family="system-ui, sans-serif" font-size="11" font-weight="600">MCP</text>
+
+  <!-- Code Output Box -->
+  <rect x="790" y="194" width="284" height="214" rx="10" fill="#0b1020" stroke="#283562"/>
+  <text x="804" y="218" fill="#818cf8" font-family="ui-monospace, monospace" font-size="11.5">&lt;user_profile&gt;</text>
+  <text x="814" y="238" fill="#6ee7b7" font-family="ui-monospace, monospace" font-size="11">&lt;identity&gt;</text>
+  <text x="824" y="256" fill="#cbd5e1" font-family="ui-monospace, monospace" font-size="10.5">- Full-stack AI dev</text>
+  <text x="814" y="274" fill="#6ee7b7" font-family="ui-monospace, monospace" font-size="11">&lt;/identity&gt;</text>
+  <text x="814" y="294" fill="#6ee7b7" font-family="ui-monospace, monospace" font-size="11">&lt;stack&gt;</text>
+  <text x="824" y="312" fill="#cbd5e1" font-family="ui-monospace, monospace" font-size="10.5">- TS, React, Node, SQLite</text>
+  <text x="814" y="330" fill="#6ee7b7" font-family="ui-monospace, monospace" font-size="11">&lt;/stack&gt;</text>
+  <text x="814" y="350" fill="#6ee7b7" font-family="ui-monospace, monospace" font-size="11">&lt;rules&gt;</text>
+  <text x="824" y="368" fill="#cbd5e1" font-family="ui-monospace, monospace" font-size="10.5">- Concise code, no fluff</text>
+  <text x="814" y="386" fill="#6ee7b7" font-family="ui-monospace, monospace" font-size="11">&lt;/rules&gt;</text>
+  <text x="804" y="401" fill="#818cf8" font-family="ui-monospace, monospace" font-size="11.5">&lt;/user_profile&gt;</text>
+
+  <!-- Copy CTA -->
+  <rect x="790" y="422" width="170" height="44" rx="10" fill="url(#accent)"/>
+  <text x="875" y="449" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="13" font-weight="800">Copy for Claude</text>
+  <rect x="968" y="422" width="106" height="44" rx="10" fill="#192242" stroke="#283562"/>
+  <text x="1021" y="449" text-anchor="middle" fill="#eef2ff" font-family="system-ui, sans-serif" font-size="12" font-weight="700">~180 tokens</text>
+</svg>
