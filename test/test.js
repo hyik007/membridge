@@ -1,13 +1,19 @@
 import assert from 'node:assert/strict';
+import '../src/core/vault.js';
 import {
   SAMPLE_DATA,
   TARGETS,
+  PLATFORM_LIMITS,
   parseInput,
   redactSecrets,
   formatForTarget,
+  mergeMemories,
+  autoFitMemories,
 } from '../src/core/engine.mjs';
 
-function runTests() {
+const { encryptVault, decryptVault, isEncryptedVault } = globalThis.MemBridgeVault;
+
+async function runTests() {
   // 1. Parse ChatGPT conversations.json
   const gpt = parseInput(SAMPLE_DATA.chatgpt, 'conversations.json');
   assert.equal(gpt.format, 'chatgpt-json');
@@ -60,7 +66,40 @@ function runTests() {
   assert.equal(roundTrip.format, 'brain-json');
   assert.equal(roundTrip.items.length, raw.items.length);
 
-  console.log(`Verified ${Object.keys(TARGETS).length} target formatters, 4 input parsers, and secret redaction.`);
+  // 6. Multi-AI Brain Merge & Deduplication
+  const merged = mergeMemories(gpt.items, [
+    ...claude.items,
+    { id: 'dup-1', category: 'identity', text: gpt.items[0].text + '!!!', enabled: true },
+  ]);
+  assert.ok(merged.added >= claude.items.length, 'Should add non-duplicate memories from second AI');
+  assert.ok(merged.skipped >= 1, 'Should skip punctuation/case duplicate');
+  assert.equal(merged.memories.length, gpt.items.length + merged.added);
+
+  // 7. Auto-Fit to Platform Limit (ChatGPT 1,500 chars)
+  const hugeList = Array.from({ length: 40 }, (_, i) => ({
+    id: `m-${i}`,
+    category: i < 3 ? 'identity' : 'context',
+    text: `Project detail number ${i}: building portable AI memory tooling across ChatGPT, Claude, Gemini, and DeepSeek with strict privacy.`,
+    enabled: true,
+  }));
+  const fit = autoFitMemories(hugeList, 'chatgpt', true);
+  assert.ok(fit.chars <= PLATFORM_LIMITS.chatgpt, `Auto-fit exceeded ChatGPT limit: ${fit.chars}`);
+  assert.ok(fit.trimmed > 0, 'Should trim lower-priority memories when over limit');
+  assert.ok(fit.selectedIds.has('m-0'), 'Should prioritize identity memories first');
+
+  // 8. AES-256-GCM Encrypted Vault round-trip + wrong-passphrase rejection
+  const brainPayload = { format: 'membridge.brain.json', memories: raw.items };
+  const encrypted = await encryptVault(brainPayload, 'my-secret-passphrase');
+  assert.equal(isEncryptedVault(encrypted), true, 'Should detect encrypted vault format');
+  const decrypted = await decryptVault(encrypted, 'my-secret-passphrase');
+  assert.equal(decrypted.memories.length, raw.items.length, 'Decrypted vault should match original memories');
+  await assert.rejects(
+    () => decryptVault(encrypted, 'wrong-passphrase'),
+    /Incorrect passphrase/,
+    'Wrong passphrase should reject decryption'
+  );
+
+  console.log(`Verified ${Object.keys(TARGETS).length} target formatters, 4 input parsers, merge/dedup, auto-fit, AES-256 vault, and secret redaction.`);
   console.log('ALL TESTS PASSED');
 }
 

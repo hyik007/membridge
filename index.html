@@ -62,11 +62,11 @@
           </p>
         </div>
 
-        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop .zip, conversations.json, or memory file here">
-          <input id="file-input" type="file" accept=".zip,.json,.md,.txt,.brain.json" hidden />
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop .zip, conversations.json, encrypted vault, or memory file here">
+          <input id="file-input" type="file" accept=".zip,.json,.md,.txt,.brain.json,.enc" hidden />
           <div class="dropzone-icon">↑</div>
-          <p><strong>Drop .zip or file here</strong> or <span class="link-like">browse computer</span></p>
-          <p class="muted small">Direct <code>.zip</code> unzip for ChatGPT/Claude exports, plus <code>conversations.json</code>, <code>.brain.json</code>, <code>.md</code>, <code>.txt</code></p>
+          <p><strong>Drop .zip, .enc vault, or file here</strong> or <span class="link-like">browse computer</span></p>
+          <p class="muted small">Direct <code>.zip</code> unzip, <code>.membridge.enc</code> AES-256 vault, <code>conversations.json</code>, <code>.brain.json</code>, <code>.md</code>, <code>.txt</code></p>
         </div>
 
         <div class="sample-row">
@@ -84,10 +84,14 @@
           placeholder="Paste your AI memories, custom instructions, or JSON here..."
         ></textarea>
 
-        <div class="actions-row">
+        <div class="actions-row actions-between">
           <button id="btn-extract" class="btn btn-primary" type="button">Extract &amp; Distill Memories</button>
-          <span id="import-status" class="muted small"></span>
+          <label class="merge-toggle" title="Combine multiple AI exports (e.g. ChatGPT + Claude) into one deduplicated Brain">
+            <input id="toggle-merge" type="checkbox" />
+            <span>Merge with existing Brain</span>
+          </label>
         </div>
+        <span id="import-status" class="muted small"></span>
 
         <details class="ai-compress-card">
           <summary>Optional: AI Smart Compress (Local Ollama or BYO Key)</summary>
@@ -153,6 +157,18 @@
         </div>
 
         <div id="memory-list" class="memory-list" aria-live="polite"></div>
+
+        <details class="vault-card">
+          <summary>Encrypted Brain Vault (AES-256-GCM · Zero Cloud)</summary>
+          <p class="muted small">
+            Lock your Brain with a passphrase into a portable <code>.membridge.enc</code> file. Drop it back into Step 1 on any device to unlock.
+          </p>
+          <div class="vault-row">
+            <input id="vault-passphrase" class="input-control" type="password" placeholder="Enter passphrase (min 4 chars)..." aria-label="Vault encryption passphrase" />
+            <button id="btn-vault-export" class="btn btn-secondary btn-sm" type="button">Lock &amp; Export Vault</button>
+          </div>
+          <span id="vault-status" class="muted small" aria-live="polite"></span>
+        </details>
       </section>
 
       <!-- STEP 3: TELEPORT -->
@@ -173,6 +189,16 @@
 
         <div id="target-guide" class="guide-banner"></div>
 
+        <div class="limit-bar-wrap">
+          <div class="limit-bar-head">
+            <span id="limit-label" class="small">0 / 1,500 chars</span>
+            <button id="btn-autofit" class="btn btn-chip" type="button" hidden>⚡ Auto-Fit to Limit</button>
+          </div>
+          <div class="limit-track" aria-hidden="true">
+            <div id="limit-fill" class="limit-fill"></div>
+          </div>
+        </div>
+
         <textarea id="output-preview" class="textarea-output" rows="11" readonly aria-label="Formatted output"></textarea>
 
         <div class="actions-row actions-between">
@@ -180,9 +206,15 @@
             <button id="btn-copy-output" class="btn btn-primary" type="button">Copy for Destination AI</button>
             <button id="btn-download" class="btn btn-secondary" type="button">Download File</button>
           </div>
-          <a id="btn-open-target" class="btn btn-ghost" href="#" target="_blank" rel="noopener noreferrer" hidden>
-            Open Target AI ↗
-          </a>
+          <div class="actions-right">
+            <span class="muted small">1-Click Chat:</span>
+            <a id="btn-launch-chatgpt" class="btn btn-chip" data-launch="chatgpt" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT ↗</a>
+            <a id="btn-launch-claude" class="btn btn-chip" data-launch="claude" href="https://claude.ai/new" target="_blank" rel="noopener noreferrer">Claude ↗</a>
+            <a id="btn-launch-perplexity" class="btn btn-chip" data-launch="perplexity" href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer">Perplexity ↗</a>
+            <a id="btn-open-target" class="btn btn-ghost btn-sm" href="#" target="_blank" rel="noopener noreferrer" hidden>
+              Settings ↗
+            </a>
+          </div>
         </div>
       </section>
     </main>
@@ -246,6 +278,7 @@
 
   <script src="./src/core/engine.js"></script>
   <script src="./src/core/zip.js"></script>
+  <script src="./src/core/vault.js"></script>
   <script src="./src/app.js"></script>
 </body>
 </html>

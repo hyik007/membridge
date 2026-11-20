@@ -610,10 +610,88 @@
     };
   }
 
+  const PLATFORM_LIMITS = {
+    chatgpt: 1500,
+    gemini: 4000,
+    deepseek: 8000,
+    claude: 12000,
+    markdown: 16000,
+    json: 32000,
+  };
+
+  const PRIORITY_ORDER = ['identity', 'rules', 'stack', 'projects', 'preferences', 'context'];
+
+  function normalizeForDedup(text) {
+    const collapsed = String(text || '').replace(/\s+/g, ' ').trim();
+    let end = collapsed.length;
+    while (end > 0 && (collapsed[end - 1] === '.' || collapsed[end - 1] === '!' || collapsed[end - 1] === '?')) {
+      end--;
+    }
+    return collapsed.slice(0, end).toLowerCase();
+  }
+
+  function mergeMemories(existing = [], incoming = []) {
+    const merged = [];
+    const seen = new Set();
+    for (const item of existing) {
+      const key = normalizeForDedup(item && item.text);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      merged.push(item);
+    }
+    let added = 0;
+    let skipped = 0;
+    for (const item of incoming) {
+      const key = normalizeForDedup(item && item.text);
+      if (!key) continue;
+      if (seen.has(key)) {
+        skipped++;
+        continue;
+      }
+      seen.add(key);
+      merged.push(item);
+      added++;
+    }
+    return { memories: merged, added, skipped };
+  }
+
+  function autoFitMemories(memories = [], targetId = 'chatgpt', redact = true) {
+    const limit = PLATFORM_LIMITS[targetId] || 4000;
+    const enabled = memories.filter((m) => m && m.enabled !== false);
+    const ranked = [...enabled].sort((a, b) => {
+      const pa = PRIORITY_ORDER.indexOf(a.category);
+      const pb = PRIORITY_ORDER.indexOf(b.category);
+      const ra = pa === -1 ? 99 : pa;
+      const rb = pb === -1 ? 99 : pb;
+      if (ra !== rb) return ra - rb;
+      return (a.text || '').length - (b.text || '').length;
+    });
+
+    const chosen = [];
+    for (const item of ranked) {
+      const candidate = [...chosen, item];
+      const formatted = formatForTarget(candidate, targetId, { redact });
+      if (formatted.stats.outputChars <= limit || chosen.length === 0) {
+        chosen.push(item);
+      }
+    }
+
+    const selectedIds = new Set(chosen.map((m) => m.id));
+    const finalOut = formatForTarget(chosen, targetId, { redact });
+    return {
+      selectedIds,
+      kept: chosen.length,
+      trimmed: Math.max(0, enabled.length - chosen.length),
+      chars: finalOut.stats.outputChars,
+      limit,
+    };
+  }
+
   root.MemBridge = {
     CATEGORIES,
     CATEGORY_ORDER,
     TARGETS,
+    PLATFORM_LIMITS,
     EXTRACTION_PROMPT,
     SAMPLE_DATA,
     hasSecret,
@@ -621,5 +699,7 @@
     inferCategory,
     parseInput,
     formatForTarget,
+    mergeMemories,
+    autoFitMemories,
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
