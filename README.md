@@ -104,5 +104,8 @@ Secret redaction is enabled by default and masks `sk-...`, `ghp_...`, `AIza...`,
 npm test
 ```
 
+## Credits
+Built by **Hong Yik ([@hyik007](https://github.com/hyik007))** with AI pair-programming via **Google Antigravity**.
+
 ## License
 MIT — If MemBridge saved you time, a **Star ⭐** helps more people discover it!
