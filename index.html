@@ -19,6 +19,8 @@
       <div class="topbar-badges">
         <span class="pill pill-privacy">100% Local · Zero Upload</span>
         <span id="format-badge" class="pill pill-neutral">Ready</span>
+        <a class="pill pill-pro" href="#pro-section">Pro &amp; Support ✦</a>
+        <a class="pill pill-github" href="https://github.com/hyik007/membridge" target="_blank" rel="noopener noreferrer">GitHub ⭐</a>
       </div>
     </header>
 
@@ -184,6 +186,60 @@
         </div>
       </section>
     </main>
+
+    <!-- OPEN-CORE & PRO SECTION -->
+    <section id="pro-section" class="pro-section" aria-labelledby="pro-heading">
+      <div class="pro-header">
+        <div>
+          <span class="pill pill-pro">Open-Core · Built for Power Users</span>
+          <h2 id="pro-heading">Free Local Forever. Upgrade When You Want Cloud Sync.</h2>
+          <p class="muted">The local Web Studio, CLI, and Grade-A Glama MCP Server are 100% open-source. MemBridge Pro funds ongoing development.</p>
+        </div>
+      </div>
+
+      <div class="pro-grid">
+        <article class="pro-card">
+          <div class="pro-card-top">
+            <h3>Open Source</h3>
+            <div class="pro-price"><strong>$0</strong> <span>/ forever</span></div>
+          </div>
+          <ul class="pro-features">
+            <li>100% local Web Studio (.zip, .json, .md)</li>
+            <li>Auto secret redaction &amp; 6 AI formatters</li>
+            <li>Local CLI &amp; Grade-A Glama MCP Server</li>
+            <li>Optional local Ollama Smart Compress</li>
+          </ul>
+          <div class="pro-actions">
+            <a class="btn btn-secondary" href="https://github.com/hyik007/membridge" target="_blank" rel="noopener noreferrer">Star on GitHub ⭐</a>
+            <a class="btn btn-ghost" href="https://glama.ai/mcp/servers/hyik007/membridge" target="_blank" rel="noopener noreferrer">Glama MCP ↗</a>
+          </div>
+        </article>
+
+        <article class="pro-card pro-card-featured">
+          <div class="pro-card-top">
+            <div>
+              <h3>MemBridge Pro <span class="pro-badge-early">Early Access</span></h3>
+            </div>
+            <div class="pro-price"><strong>$7</strong> <span>/ mo · or $49 lifetime</span></div>
+          </div>
+          <ul class="pro-features">
+            <li>End-to-end encrypted cloud sync across devices</li>
+            <li>1-click hosted remote MCP endpoint (zero install)</li>
+            <li>Shared team memory packs &amp; version history</li>
+            <li>Priority support &amp; early feature access</li>
+          </ul>
+          <form id="pro-waitlist-form" class="pro-form">
+            <input id="pro-email" type="email" placeholder="you@domain.com (for Early Bird $49 invite)" required aria-label="Email for MemBridge Pro early access" />
+            <button id="btn-pro-cta" class="btn btn-primary" type="submit">Get Pro Early Access ✦</button>
+          </form>
+          <div class="pro-support-row">
+            <span class="muted small">Just want to support the project?</span>
+            <a id="btn-support-link" class="pro-support-link" href="mailto:hylaw19@gmail.com?subject=Support%20MemBridge%20(Tip%20%2F%20DuitNow%20%2F%20Sponsor)" target="_blank" rel="noopener noreferrer">Sponsor / Tip Creator ↗</a>
+          </div>
+          <p id="pro-status" class="muted small" aria-live="polite"></p>
+        </article>
+      </div>
+    </section>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>

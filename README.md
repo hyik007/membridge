@@ -104,6 +104,11 @@ Secret redaction is enabled by default and masks `sk-...`, `ghp_...`, `AIza...`,
 npm test
 ```
 
+## Support & MemBridge Pro
+MemBridge's local Web Studio, CLI, and MCP Server are **100% free & open-source**.
+- **Want Encrypted Cloud Sync, Hosted Remote MCP, or Team Memory Packs?** Request **MemBridge Pro Early Access** on [membridge.vercel.app/#pro-section](https://membridge.vercel.app/#pro-section) or email `hylaw19@gmail.com`.
+- **Want to support the project?** Star the repo ⭐ or reach out for sponsorship / tips.
+
 ## Credits
 Built by **Hong Yik ([@hyik007](https://github.com/hyik007))** with AI pair-programming via **Google Antigravity**.
 
