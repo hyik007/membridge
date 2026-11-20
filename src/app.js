@@ -5,10 +5,13 @@
     CATEGORIES,
     CATEGORY_ORDER,
     TARGETS,
+    PLATFORM_LIMITS,
     EXTRACTION_PROMPT,
     SAMPLE_DATA,
     parseInput,
     formatForTarget,
+    mergeMemories,
+    autoFitMemories,
     hasSecret,
     redactSecrets,
   } = window.MemBridge;
@@ -33,6 +36,7 @@
     fileInput: document.getElementById('file-input'),
     rawInput: document.getElementById('raw-input'),
     btnExtract: document.getElementById('btn-extract'),
+    toggleMerge: document.getElementById('toggle-merge'),
     importStatus: document.getElementById('import-status'),
     toggleRedact: document.getElementById('toggle-redact'),
     categoryTabs: document.getElementById('category-tabs'),
@@ -41,8 +45,14 @@
     addCategory: document.getElementById('add-category'),
     addText: document.getElementById('add-text'),
     memoryList: document.getElementById('memory-list'),
+    vaultPassphrase: document.getElementById('vault-passphrase'),
+    btnVaultExport: document.getElementById('btn-vault-export'),
+    vaultStatus: document.getElementById('vault-status'),
     targetTabs: document.getElementById('target-tabs'),
     targetGuide: document.getElementById('target-guide'),
+    limitLabel: document.getElementById('limit-label'),
+    limitFill: document.getElementById('limit-fill'),
+    btnAutofit: document.getElementById('btn-autofit'),
     outputPreview: document.getElementById('output-preview'),
     metricItems: document.getElementById('metric-items'),
     metricTokens: document.getElementById('metric-tokens'),
@@ -118,11 +128,20 @@
 
   function runExtraction(rawText, fileName = '') {
     const result = parseInput(rawText, fileName);
-    state.memories = result.items;
-    state.rawChars = result.rawChars;
-    state.format = result.format;
+    const shouldMerge = Boolean(els.toggleMerge && els.toggleMerge.checked && state.memories.length);
+    if (shouldMerge) {
+      const merged = mergeMemories(state.memories, result.items);
+      state.memories = merged.memories;
+      state.rawChars += result.rawChars;
+      state.format = `merged (${result.format})`;
+      els.importStatus.textContent = `Merged ${merged.added} new · skipped ${merged.skipped} duplicates (total ${merged.memories.length})`;
+    } else {
+      state.memories = result.items;
+      state.rawChars = result.rawChars;
+      state.format = result.format;
+      els.importStatus.textContent = `Extracted ${result.items.length} memories (${result.format})`;
+    }
     state.activeCategory = 'all';
-    els.importStatus.textContent = `Extracted ${result.items.length} memories (${result.format})`;
     saveState();
     renderAll();
   }
@@ -284,10 +303,49 @@
     if (formatted.target.url) {
       els.btnOpenTarget.href = formatted.target.url;
       els.btnOpenTarget.hidden = false;
-      els.btnOpenTarget.textContent = `Open ${formatted.target.name} ↗`;
+      els.btnOpenTarget.textContent = `${formatted.target.name} Settings ↗`;
     } else {
       els.btnOpenTarget.hidden = true;
     }
+
+    // Update platform limit gauge & Auto-Fit button
+    const limit = (PLATFORM_LIMITS && PLATFORM_LIMITS[state.target]) || 4000;
+    const chars = formatted.stats.outputChars;
+    const pct = Math.min(100, Math.round((chars / limit) * 100));
+    const isOver = chars > limit;
+    const isWarn = !isOver && pct >= 80;
+    if (els.limitLabel) {
+      els.limitLabel.textContent = isOver
+        ? `${chars.toLocaleString()} / ${limit.toLocaleString()} chars · Over ${formatted.target.name} limit`
+        : `${chars.toLocaleString()} / ${limit.toLocaleString()} chars · Fits ${formatted.target.name} (${pct}%)`;
+    }
+    if (els.limitFill) {
+      els.limitFill.style.width = `${pct}%`;
+      els.limitFill.className = `limit-fill${isOver ? ' over' : isWarn ? ' warn' : ''}`;
+    }
+    if (els.btnAutofit) {
+      els.btnAutofit.hidden = !isOver;
+    }
+
+    // Sync 1-click AI chat launcher links
+    const encoded = encodeURIComponent(formatted.output);
+    const launchTemplates = {
+      chatgpt: { full: `https://chatgpt.com/?q=${encoded}`, base: 'https://chatgpt.com/' },
+      claude: { full: `https://claude.ai/new?q=${encoded}`, base: 'https://claude.ai/new' },
+      perplexity: { full: `https://www.perplexity.ai/?q=${encoded}`, base: 'https://www.perplexity.ai/' },
+    };
+    document.querySelectorAll('[data-launch]').forEach((link) => {
+      const provider = link.getAttribute('data-launch');
+      const cfg = launchTemplates[provider];
+      if (!cfg) return;
+      if (cfg.full.length > 3800) {
+        link.href = cfg.base;
+        link.dataset.tooLong = 'true';
+      } else {
+        link.href = cfg.full;
+        link.dataset.tooLong = 'false';
+      }
+    });
   }
 
   function renderAll() {
@@ -345,8 +403,26 @@
     }
 
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       const content = String(ev.target.result || '');
+      if (window.MemBridgeVault && window.MemBridgeVault.isEncryptedVault(content)) {
+        const passphrase = window.prompt('This is an AES-256 encrypted MemBridge Vault. Enter passphrase to unlock:');
+        if (!passphrase) {
+          els.importStatus.textContent = 'Vault unlock cancelled.';
+          return;
+        }
+        try {
+          const decrypted = await window.MemBridgeVault.decryptVault(content, passphrase);
+          const jsonText = JSON.stringify(decrypted, null, 2);
+          els.rawInput.value = jsonText.length > 50000 ? `${jsonText.slice(0, 50000)}\n... [preview truncated]` : jsonText;
+          runExtraction(jsonText, `${file.name}.brain.json`);
+          showToast(`Unlocked encrypted vault ${file.name}!`);
+        } catch (err) {
+          els.importStatus.textContent = `Vault error: ${err.message}`;
+          showToast(err.message);
+        }
+        return;
+      }
       els.rawInput.value = content.length > 50000 ? `${content.slice(0, 50000)}\n... [preview truncated, full file parsed]` : content;
       runExtraction(content, file.name);
       showToast(`Imported ${file.name}`);
@@ -506,6 +582,74 @@
     URL.revokeObjectURL(url);
     showToast(`Downloaded ${filename}`);
   });
+
+  if (els.btnAutofit) {
+    els.btnAutofit.addEventListener('click', () => {
+      const fit = autoFitMemories(state.memories, state.target, state.redact);
+      state.memories.forEach((m) => {
+        if (m.enabled !== false) {
+          m.enabled = fit.selectedIds.has(m.id);
+        }
+      });
+      saveState();
+      renderAll();
+      showToast(`Auto-Fit kept ${fit.kept} top memories (${fit.chars.toLocaleString()} / ${fit.limit.toLocaleString()} chars)`);
+    });
+  }
+
+  document.querySelectorAll('[data-launch]').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (link.dataset.tooLong === 'true') {
+        copyText(els.outputPreview.value, 'Long Memory Pack (paste into opened AI tab)');
+      }
+    });
+  });
+
+  if (els.btnVaultExport && els.vaultPassphrase) {
+    els.btnVaultExport.addEventListener('click', async () => {
+      const passphrase = els.vaultPassphrase.value || '';
+      if (passphrase.length < 4) {
+        if (els.vaultStatus) els.vaultStatus.textContent = 'Enter a passphrase of at least 4 characters.';
+        return;
+      }
+      if (!window.MemBridgeVault) {
+        if (els.vaultStatus) els.vaultStatus.textContent = 'Vault module unavailable in this browser.';
+        return;
+      }
+      try {
+        els.btnVaultExport.disabled = true;
+        const brainPayload = {
+          version: '1.0',
+          format: 'membridge.brain.json',
+          exportedAt: new Date().toISOString(),
+          memories: state.memories.map((m) => ({
+            id: m.id,
+            category: m.category,
+            text: state.redact ? redactSecrets(m.text) : m.text,
+            source: m.source || 'manual',
+            enabled: m.enabled !== false,
+          })),
+        };
+        const encrypted = await window.MemBridgeVault.encryptVault(brainPayload, passphrase);
+        const blob = new Blob([encrypted], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'membridge-brain.membridge.enc';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        els.vaultPassphrase.value = '';
+        if (els.vaultStatus) els.vaultStatus.textContent = `Exported AES-256 encrypted vault (${state.memories.length} memories).`;
+        showToast('Encrypted .membridge.enc vault downloaded!');
+      } catch (err) {
+        if (els.vaultStatus) els.vaultStatus.textContent = `Encryption failed: ${err.message}`;
+      } finally {
+        els.btnVaultExport.disabled = false;
+      }
+    });
+  }
 
   // MemBridge Pro checkout / early access config
   // Once your Polar.sh or Lemon Squeezy checkout URL is ready, paste it into PRO_CHECKOUT_URL below:
