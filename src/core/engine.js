@@ -293,10 +293,16 @@
       const trimmed = rawLine.trim();
       if (!trimmed) continue;
 
-      const headingMatch = trimmed.match(/^#{1,4}\s+(.+)$/);
-      if (headingMatch) {
-        currentHeading = headingMatch[1];
-        continue;
+      if (trimmed.startsWith('#')) {
+        let hashes = 0;
+        while (hashes < trimmed.length && trimmed[hashes] === '#') hashes++;
+        if (hashes >= 1 && hashes <= 4 && hashes < trimmed.length && /\s/.test(trimmed[hashes])) {
+          const heading = trimmed.slice(hashes).trim();
+          if (heading) {
+            currentHeading = heading;
+            continue;
+          }
+        }
       }
 
       if (fromConversationLog) {
@@ -462,7 +468,11 @@
     for (const seg of candidateSegments) {
       const candidates = splitCandidateLines(seg, fromConversationLog);
       for (const { text, headingHint } of candidates) {
-        const norm = text.toLowerCase().replace(/[.!?]+$/, '');
+        let end = text.length;
+        while (end > 0 && (text[end - 1] === '.' || text[end - 1] === '!' || text[end - 1] === '?')) {
+          end--;
+        }
+        const norm = text.slice(0, end).toLowerCase();
         if (seen.has(norm)) continue;
         seen.add(norm);
         items.push({

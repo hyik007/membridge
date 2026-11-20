@@ -1,12 +1,16 @@
 (function () {
   'use strict';
 
+  function matchesHost(hostname, domain) {
+    return hostname === domain || hostname.endsWith(`.${domain}`);
+  }
+
   function detectPlatform() {
-    const host = window.location.hostname;
-    if (host.includes('chatgpt.com')) return 'chatgpt';
-    if (host.includes('claude.ai')) return 'claude';
-    if (host.includes('gemini.google.com')) return 'gemini';
-    if (host.includes('deepseek.com')) return 'deepseek';
+    const host = (window.location.hostname || '').toLowerCase();
+    if (matchesHost(host, 'chatgpt.com')) return 'chatgpt';
+    if (matchesHost(host, 'claude.ai')) return 'claude';
+    if (matchesHost(host, 'gemini.google.com')) return 'gemini';
+    if (matchesHost(host, 'deepseek.com')) return 'deepseek';
     return 'unknown';
   }
 

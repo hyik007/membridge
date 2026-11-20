@@ -36,11 +36,21 @@
     return tab;
   }
 
+  function matchesHost(hostname, domain) {
+    return hostname === domain || hostname.endsWith(`.${domain}`);
+  }
+
   function detectHost(url = '') {
-    if (url.includes('chatgpt.com')) return 'chatgpt';
-    if (url.includes('claude.ai')) return 'claude';
-    if (url.includes('gemini.google.com')) return 'gemini';
-    if (url.includes('deepseek.com')) return 'deepseek';
+    let host = '';
+    try {
+      host = new URL(url).hostname.toLowerCase();
+    } catch (_err) {
+      return 'unsupported';
+    }
+    if (matchesHost(host, 'chatgpt.com')) return 'chatgpt';
+    if (matchesHost(host, 'claude.ai')) return 'claude';
+    if (matchesHost(host, 'gemini.google.com')) return 'gemini';
+    if (matchesHost(host, 'deepseek.com')) return 'deepseek';
     return 'unsupported';
   }
 
