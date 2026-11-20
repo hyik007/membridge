@@ -507,5 +507,42 @@
     showToast(`Downloaded ${filename}`);
   });
 
+  // MemBridge Pro checkout / early access config
+  // Once your Polar.sh or Lemon Squeezy checkout URL is ready, paste it into PRO_CHECKOUT_URL below:
+  const PRO_CHECKOUT_URL = '';
+  const SPONSOR_URL = '';
+
+  const proForm = document.getElementById('pro-waitlist-form');
+  const proEmail = document.getElementById('pro-email');
+  const proStatus = document.getElementById('pro-status');
+  const supportLink = document.getElementById('btn-support-link');
+
+  if (supportLink && SPONSOR_URL) {
+    supportLink.href = SPONSOR_URL;
+  }
+
+  if (proForm && proEmail) {
+    proForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = proEmail.value.trim();
+      if (!email) return;
+
+      if (PRO_CHECKOUT_URL) {
+        const sep = PRO_CHECKOUT_URL.includes('?') ? '&' : '?';
+        window.open(`${PRO_CHECKOUT_URL}${sep}email=${encodeURIComponent(email)}`, '_blank', 'noopener,noreferrer');
+        if (proStatus) proStatus.textContent = 'Opening secure checkout...';
+        return;
+      }
+
+      const subject = encodeURIComponent('MemBridge Pro Early Access ($49 Lifetime / $7 mo)');
+      const body = encodeURIComponent(`Hi Hong Yik,\n\nI would like Early Access to MemBridge Pro.\nMy email: ${email}\n\nThanks!`);
+      window.location.href = `mailto:hylaw19@gmail.com?subject=${subject}&body=${body}`;
+      if (proStatus) {
+        proStatus.textContent = `Thanks! Opening your email client to reserve Early Access for ${email}.`;
+      }
+      showToast('Early Access request ready!');
+    });
+  }
+
   loadInitialState();
 })();
