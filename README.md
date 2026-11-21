@@ -23,12 +23,14 @@
 
 Switching from **ChatGPT -> Claude -> Gemini -> DeepSeek** shouldn't force you to re-explain who you are, your tech stack, and every active project from scratch.
 
-| Feature | One-off Scripts | Vector DB / Cloud Memory | **MemBridge v1.1** |
+| Feature | One-off Scripts | Vector DB / Cloud Memory | **MemBridge v1.2** |
 |---|---|---|---|
 | Non-technical Web Studio (zero install) | No | No (needs DB/cloud account) | **Yes — [membridge.vercel.app](https://membridge.vercel.app)** |
-| Direct `.zip` drop (ChatGPT / Claude exports) | Manual unzip | Manual unzip | **Built-in browser unzip (0 deps)** |
-| Works across *all* major AIs | Usually 1 -> 1 | Coding tools only | **N-to-N (Claude, ChatGPT, Gemini, DeepSeek, MCP)** |
-| Persistent cross-agent MCP memory | No | Cloud / heavy setup | **`membridge_remember` & `membridge_recall` (`~/.membridge/brain.json`)** |
+| Direct `.zip` drop & Multi-AI Brain Merge | Manual unzip | Manual unzip | **Built-in browser unzip + smart deduplication across AIs** |
+| Encrypted Portable Backup | Plaintext | Vendor lock-in | **AES-256-GCM + PBKDF2 `.membridge.enc` Vault (zero cloud)** |
+| Platform Limit Gauge & Auto-Fit | Manual cutting | No | **Live fit bar + 1-click Auto-Fit (e.g. ChatGPT 1,500-char cap)** |
+| Works across *all* major AIs | Usually 1 -> 1 | Coding tools only | **N-to-N (Claude, ChatGPT, Gemini, DeepSeek, Perplexity, MCP)** |
+| Persistent cross-agent MCP memory | No | Cloud / heavy setup | **Grade-A Glama MCP (`membridge_remember` / `membridge_recall`)** |
 | Optional AI Smart Compress | No | Paid cloud | **Local Ollama or BYO Key (direct from browser)** |
 | Auto-redacts API keys & emails | No | No | **Built-in secret masker (`sk-...`, `ghp_...`, AWS, emails)** |
 | Dependencies & Telemetry | Heavy | Cloud tracking | **0 npm dependencies · 100% local** |
@@ -45,9 +47,9 @@ npm start
 # Opens at http://127.0.0.1:4321
 ```
 
-1. **Import:** Drop your official **ChatGPT/Claude `.zip` export**, `conversations.json`, `.brain.json`, or paste the built-in **10-Second Quick-Extract Prompt** output from any AI chat.
-2. **Curate & Redact:** Toggle, edit, recategorize, auto-mask accidental secrets, or run optional **AI Smart Compress** via local Ollama.
-3. **1-Click Teleport:** Export cleanly formatted for **Claude XML**, **ChatGPT Custom Instructions**, **Gemini Saved Info**, **DeepSeek/Grok**, **`MEMORY.md`**, or **`.brain.json`**.
+1. **Import & Merge:** Drop your official **ChatGPT/Claude `.zip` export**, `.membridge.enc` encrypted vault, `conversations.json`, `.brain.json`, or paste the built-in **10-Second Quick-Extract Prompt**. Enable **Merge with existing Brain** to combine multiple AIs with automatic deduplication.
+2. **Curate, Redact & Lock:** Toggle, edit, recategorize, auto-mask accidental secrets, run optional **AI Smart Compress** via local Ollama, or export a passphrase-locked **AES-256-GCM `.membridge.enc` Vault**.
+3. **1-Click Teleport:** Check the live **Platform Limit Gauge** (with **⚡ Auto-Fit to Limit** for ChatGPT's 1,500-char cap) and launch straight into **ChatGPT**, **Claude**, or **Perplexity**, or download **`MEMORY.md`** / **`.brain.json`**.
 
 ### 2. Chrome / Edge Browser Extension (In-Tab Teleport)
 1. Download `membridge-chrome-extension.zip` from **[Releases](https://github.com/hyik007/membridge/releases/latest)** (or use the `extension/` folder).
